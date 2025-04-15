@@ -27,19 +27,32 @@ export default class Calculator extends Component {
   }
 
   setOperation(operation) {
-    if(this.state.current === 0){
-        this.setState({operation, current: 1, clearDisplay:true})
+    if (this.state.current === 0) {
+      this.setState({ operation, current: 1, clearDisplay: true });
     } else {
-        const equals = operation === "="
-        const currentOperation = this.state.operation
-        const values = [...this.state]
-        values[0] = eval(`${values[0]} ${currentOperation} ${values[1]}}`)
+      const equals = operation === "=";
+      const currentOperation = this.state.operation;
+      const values = [...this.state.values];
+  
+      // Garante que o valor atual do display esteja em values[1]
+      values[1] = parseFloat(this.state.displayValue);
+  
+      try {
+        values[0] = eval(`${values[0]} ${currentOperation} ${values[1]}`);
+      } catch (e) {
+        values[0] = this.state.values[0];
+      }
+  
+      values[1] = 0;
+  
+      this.setState({
+        displayValue: values[0].toString(),
+        operation: equals ? null : operation,
+        current: equals ? 0 : 1,
+        clearDisplay: !equals,
+        values
+      });
     }
-
-    this.setState({
-        displayValue: values[0]
-    })
-
   }
 
   addDigit(n) {
